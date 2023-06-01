@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BratLearn</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"
+        integrity="sha512-3gJwYpMe3QewGELv8k/BX9vcqhryRdzRMxVfq6ngyWXwo03GFEzjsUm8Q7RZcHPHksttq7/GFoxjCVUjkjvPdw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div class="row m-0" style="height: 100vh; width: 100vw;">
+        <aside class="col-3 p-3">
+            <div class="d-flex align-items-center flex-column text-white py-4">
+                <p class="m-0" style="font-size: 1.4em;">Best Score:</p>
+                <p class="fw-bold" id="bestScore" style="font-size: 3.5em; height: fit-content;">0</p>
+            </div>
+            <div class="d-flex align-items-center flex-column text-white py-4">
+                <p class="m-0" style="font-size: 1.4em;">Current Score:</p>
+                <p class="fw-bold" id="curScore" style="font-size: 3.5em; height: fit-content;">0</p>
+            </div>
+            <div class="d-flex align-items-center flex-column text-white py-4">
+                <p class="m-0" style="font-size: 1.4em;">Timer:</p>
+                <p class="fw-bold" id="Timer" style="font-size: 3.5em; height: fit-content;">10</p>
+            </div>
+        </aside>
+
+        <main class="col-9 p-0 d-flex flex-column">
+            <div id="display" class="d-flex justify-content-center p-5">
+                <p><span id="num1">2</span> <span style="color:var(--Ucla-Blue); font-size: 0.8em;">X</span> <span
+                        id="num2">6</span></p>
+            </div>
+
+            <div id="card-holder" class="d-flex p-3 justify-content-evenly align-items-center">
+                <div class="Ncard shadow">
+                    65
+                </div>
+                <div class="Ncard shadow">
+                    65
+                </div>
+                <div class="Ncard shadow">
+                    65
+                </div>
+                <div class="Ncard shadow">
+                    65
+                </div>
+            </div>
+
+        </main>
+
+        <audio id="success">
+            <source src="sound/success.mp3" type="audio/mp3">
+        </audio>
+        <audio id="failed">
+            <source src="sound/failed.mp3" type="audio/mp3">
+        </audio>
+
+    </div>
+    <script>
+        var num1, num2, res, bestScore = 0, bratInp, curScore = 0, timer = 10
+
+        var cards = document.querySelectorAll('.Ncard')
+
+        console.log(cards)
+
+        function ran() {
+            let arr = []
+            num1 = Math.floor(Math.random() * 11)
+            num2 = Math.floor(Math.random() * 11)
+            $('#num1').text(num1)
+            $('#num2').text(num2)
+
+            let res = num1 * num2
+            let resPos = Math.floor(Math.random() * 4)
+
+            for (let i = 0; i < 4; i++) {
+                if (i == resPos) {
+                    cards[i].innerText = res
+                    arr.push(res)
+                } else {
+                    let n = Math.floor(Math.random() * 100)
+                    while (n==res){
+                        n = Math.floor(Math.random() * 100)
+                    }
+                    cards[i].innerText = n
+                }
+            }
+
+
+        }
+        ran()
+
+        
+        startTimer()
+        var successAudio = document.getElementById('success')
+        var failedAudio = document.getElementById('failed')
+
+       
+
+        function resetScore() {
+            curScore = 0
+            failedAudio.play()
+            setTimeout(1000)
+            ran()
+            $('#curScore').text(curScore)
+            clearInterval(timerInterval)
+            startTimer()
+            resetTimer()
+        }
+
+        function resetTimer() {
+            timer = 10
+            $('#Timer').text(timer)
+            $('#Timer').css('color', 'white')
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(function () {
+                timer -= 1
+                $('#Timer').text(timer)
+
+                if (timer < 0) {
+                    resetScore()
+                } else if (timer <= 5) {
+                    $('#Timer').css('color', 'red')
+                }
+            }, 1000)
+        }
+        
+        cards.forEach(Element => {
+            $(Element).click(function () {
+                let val = $(this).text()
+                console.log(val)
+                if (val == num1 * num2) {
+                    successAudio.play()
+                    clearInterval(timerInterval)
+                    setTimeout(1000)
+                    curScore++
+                    ran()
+                    $('#curScore').text(curScore)
+                    if (curScore > bestScore) {
+                        bestScore = curScore
+                        $('#bestScore').text(bestScore)
+                    }
+                    startTimer()
+                    resetTimer()
+                } else {
+                    resetScore()
+                }
+            })
+        })
+
+    </script>
+</body>
+
+</html>
